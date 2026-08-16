@@ -104,8 +104,40 @@ das extensões aceitas naquele sistema.
 - O campo `image` é opcional: se preenchido com o caminho de uma imagem
   (ex: `"roms/snes/capa.png"`), ela aparece no cartucho no lugar do
   ícone padrão.
-- Cada jogo cadastrado também fica acessível por link direto:
-  `seusite.com/?jogo=nome-curto-sem-espaco`
+
+### Link direto de um jogo (útil para tags NFC)
+
+Cada cartucho tem um ícone de link (🔗) no canto — clicar nele copia pra
+área de transferência o endereço direto daquele jogo
+(`seusite.com/?jogo=id-do-jogo`, usando o campo `id` cadastrado em
+`games.js`). Abrir esse link já pula a prateleira e vai direto pro jogo —
+é esse o link que faz sentido gravar numa tag NFC (com um app como o
+"NFC Tools" no Android, por exemplo: Gravar → Adicionar um registro →
+URL/URI → colar o link copiado).
+
+Uma limitação a saber: como esse acesso pula a etapa de tocar num
+cartucho na tela, o navegador ainda não teve nenhuma interação direta
+*dentro* da página — por isso o som pode começar mudo até o primeiro
+toque num controle (é uma política de autoplay do próprio navegador, não
+tem como contornar). Depois desse primeiro toque, o áudio libera
+normalmente.
+
+### Modo "links secretos" (prateleira escondida)
+
+Em `js/config.js`, `hideLibraryByDefault: true` (já vem assim) faz a
+tela inicial não mostrar nenhum jogo clicável — vira uma tela vazia com
+só o logo. A única forma de jogar é acessando o link direto de um jogo
+específico. É pensado exatamente pra uso com tags NFC: quem não tem a
+tag (ou o link) não vê nenhum jogo cadastrado.
+
+Vale saber que isso *esconde* a lista, não a protege de verdade — não há
+senha nem login. `js/games.js` continua sendo um arquivo público como
+qualquer outro do site; alguém que abrir esse arquivo diretamente vê
+todos os IDs. Serve bem contra "alguém que só está navegando no site não
+vê nada", não contra alguém procurando de propósito.
+
+Pra voltar a mostrar a prateleira normalmente (jogos + botão de
+"Carregar ROM"), troque para `hideLibraryByDefault: false`.
 
 ---
 
@@ -245,22 +277,29 @@ Quase sempre é porque o `index.html` foi aberto direto do disco (`file://`)
 em vez de por um servidor local — veja a [seção 1](#1-como-rodar-o-projeto).
 Abra o console do navegador (F12) para ver a mensagem de erro exata.
 
-**"Erro de rede" / "Network error" ao clicar num cartucho, mas o botão
-"Carregar ROM" funciona normalmente**
-Esse é o sintoma clássico de o *caminho* da ROM em `js/games.js` não bater
-com o arquivo de verdade — o upload manual funciona porque ele lê o
-arquivo direto do aparelho, sem precisar buscar por um caminho. Desde a
-última versão, o site já verifica isso antes de tentar carregar e mostra
-uma mensagem apontando exatamente qual caminho falhou; as duas causas mais
-comuns são:
-1. Diferença de maiúsculas/minúsculas ou digitação entre o campo `file`
-   em `games.js` e o nome real do arquivo dentro de `roms/`.
-2. O `index.html` foi aberto direto (duplo clique) em vez de por um
+**"Não encontrei a ROM..." ou "Erro de rede" ao clicar num cartucho, mas
+o botão "Carregar ROM" funciona normalmente**
+O upload manual sempre funciona porque lê o arquivo direto do aparelho,
+sem depender de rede — então esse sintoma é sempre sobre o *caminho* da
+ROM (o campo `file` em `games.js`) não estar sendo alcançado. Mesmo que
+o nome do arquivo esteja digitado certinho, algumas causas comuns:
+1. **Servidor de desenvolvimento leve (ex: extensão Live Server do VS
+   Code).** Alguns desses servidores lidam mal com certos tipos de
+   requisição — por isso a checagem interna do site usa `GET`, o mesmo
+   método que o próprio EmulatorJS usa de verdade, em vez de `HEAD`.
+2. Diferença de maiúsculas/minúsculas entre o `file` em `games.js` e o
+   nome real do arquivo.
+3. O `index.html` foi aberto direto (duplo clique) em vez de por um
    servidor local — veja a [seção 1](#1-como-rodar-o-projeto).
 
-Se ainda não fizer sentido, abra o console do navegador (F12 → aba
-"Network"/"Rede") e veja o endereço exato que falhou — comparar esse
-endereço com o caminho real do arquivo resolve praticamente sempre.
+**Teste manual rápido:** com o servidor local rodando, copie a URL da
+página no navegador e troque o final por `roms/snes/nome-do-arquivo.smc`
+(o caminho exato do seu jogo) — cole essa URL numa nova aba. Se o
+navegador baixar ou tocar o arquivo normalmente, o arquivo está acessível
+e o problema é em outro lugar (avise que a checagem do site pode estar
+com algum problema). Se der "Cannot GET" ou 404, o servidor não está
+enxergando aquele caminho — confira a pasta raiz que o servidor está
+usando (no Live Server, isso costuma ser a pasta aberta no VS Code).
 
 **"CORS error" no console**
 A ROM (ou a BIOS) precisa estar no mesmo domínio do site, ou o servidor

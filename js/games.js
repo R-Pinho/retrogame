@@ -40,13 +40,22 @@
  */
 window.GAME_LIBRARY = [
 
+    // ---- EXEMPLO — apague o comentário abaixo (ou edite) para testar ----
+    // {
+    //   id: "meu-jogo",
+    //   title: "Nome do Jogo",
+    //   system: "SNES",
+    //   core: "snes",
+    //   file: "roms/snes/meu-jogo.sfc",
+    //   image: "",
+    // },
     {
         id: "SMALLSTARS",
         title: "Super Mario All Stars",
         system: "SNES",
         core: "snes",
         file: "roms/snes/SMALLSTARS.smc",
-        image: "capas/smallstars.png",
+        image: "",
     },
 
     {
@@ -55,25 +64,7 @@ window.GAME_LIBRARY = [
         system: "SNES",
         core: "snes",
         file: "roms/snes/SMK.smc",
-        image: "capas/smk.png",
-    },
-
-    // {
-    //     id: "bbegins",
-    //     title: "Batman Begins",
-    //    system: "GBA",
-    //   core: "mGBA",
-    //     file: "roms/gba/bbegins.gba",
-    //     image: "",
-    //},
-
-    {
-        id: "Doom64",
-        title: "Doom 64",
-        system: "N64",
-        core: "n64",
-        file: "roms/n64/Doom64.z64",
-        image: "capas/Doom64.png",
+        image: "",
     },
 
     {
@@ -82,15 +73,6 @@ window.GAME_LIBRARY = [
         system: "nes",
         core: "nes",
         file: "roms/nes/TMNT.nes",
-        image: "capas/tmnt.png",
+        image: "",
     },
-
-    //  {
-    //      id: "Pandemonium",
-    //      title: "Pandemonium",
-    //      system: "ps1",
-    //      core: "psx",
-    //      file: "roms/psx/Pandemonium.bin",
-    //      image: "capas/Pandemonium.jpg",
-    //  },
 ];
