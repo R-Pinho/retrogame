@@ -1,0 +1,10 @@
+PASTA: SNES (Super Nintendo)
+=============================
+Coloque aqui os arquivos de ROM do Super Nintendo.
+
+Extensões aceitas: .smc .sfc .fig .swc .bs
+Núcleo (core) em games.js: "snes"
+Precisa de BIOS? Não.
+
+Depois de copiar o arquivo aqui, cadastre o jogo em js/games.js.
+Detalhes completos: veja o README.md na raiz do projeto.

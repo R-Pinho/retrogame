@@ -1,0 +1,15 @@
+PASTA: PlayStation 1
+=============================
+Coloque aqui os arquivos de ROM (imagem de disco) do PlayStation 1.
+
+Extensões aceitas: .cue (+ o .bin correspondente, mesmo nome de arquivo)
+Núcleo (core) em games.js: "psx"
+Precisa de BIOS? SIM — este é o único sistema, entre os já configurados
+neste projeto, que exige um arquivo de BIOS do console para funcionar.
+Use o campo "bios" ao cadastrar o jogo em js/games.js, apontando para
+o arquivo de BIOS (ex: "roms/psx/scph1001.bin").
+
+A BIOS precisa ser extraída de um console que você possui — não é
+distribuída junto com este projeto.
+
+Depois de copiar os arquivos aqui, cadastre o jogo em js/games.js.

@@ -1,0 +1,12 @@
+PASTA: Nintendo 64
+=============================
+Coloque aqui os arquivos de ROM do Nintendo 64.
+
+Extensões aceitas: .z64 .n64
+Núcleo (core) em games.js: "n64"
+Precisa de BIOS? Não.
+
+Atenção: jogos de N64 são pesados para emular no navegador — o
+desempenho em celulares mais simples pode variar bastante.
+
+Depois de copiar o arquivo aqui, cadastre o jogo em js/games.js.

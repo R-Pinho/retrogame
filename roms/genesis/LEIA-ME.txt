@@ -1,0 +1,9 @@
+PASTA: Mega Drive / Genesis
+=============================
+Coloque aqui os arquivos de ROM do Mega Drive (Genesis).
+
+Extensões aceitas: .md .gen .smd .sg
+Núcleo (core) em games.js: "segaMD"
+Precisa de BIOS? Não.
+
+Depois de copiar o arquivo aqui, cadastre o jogo em js/games.js.

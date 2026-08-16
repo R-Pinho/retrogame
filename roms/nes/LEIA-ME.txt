@@ -1,0 +1,10 @@
+PASTA: NES (Nintendo 8 bits)
+=============================
+Coloque aqui os arquivos de ROM do Nintendinho (NES).
+
+Extensões aceitas: .nes .fds .unif
+Núcleo (core) em games.js: "nes"
+Precisa de BIOS? Não.
+
+Depois de copiar o arquivo aqui, cadastre o jogo em js/games.js.
+Detalhes completos: veja o README.md na raiz do projeto.

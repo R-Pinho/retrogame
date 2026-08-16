@@ -1,0 +1,11 @@
+PASTA: Game Boy Advance
+=============================
+Coloque aqui os arquivos de ROM do Game Boy Advance.
+
+Extensões aceitas: .gba
+Núcleo (core) em games.js: "gba"
+Precisa de BIOS? Não é obrigatório (o núcleo mGBA roda sem BIOS),
+mas alguns jogos específicos se comportam de forma mais fiel com uma.
+Se quiser usar, veja o campo "bios" no README.md.
+
+Depois de copiar o arquivo aqui, cadastre o jogo em js/games.js.

@@ -1,0 +1,554 @@
+/**
+ * ============================================================================
+ *  STYLE.CSS — aparência do site
+ * ============================================================================
+ * Organizado em blocos, de cima pra baixo:
+ *   1. Tokens (cores, fontes) — mexa aqui pra mudar a identidade visual
+ *   2. Reset básico
+ *   3. Tela da prateleira (biblioteca de jogos)
+ *   4. Cartucho (o cartão de cada jogo)
+ *   5. Tela do jogador (onde o EmulatorJS roda)
+ *   6. Aviso de "gire o aparelho"
+ *   7. Controle virtual x controle físico
+ *   8. Animações e acessibilidade (prefers-reduced-motion, foco de teclado)
+ * ============================================================================
+ */
+
+/* ---------------------------------------------------------------------- */
+/* 1. TOKENS                                                              */
+/* ---------------------------------------------------------------------- */
+/* Paleta inspirada no console: o cinza-lavanda do Super Nintendo como cor
+   de destaque, e as 4 cores do logo (verde/amarelo/vermelho/roxo) usadas
+   como um "filete" decorativo recorrente. Se quiser trocar a identidade
+   visual inteira, mexer nessas variáveis já resolve a maior parte. */
+:root {
+  --void: #120f19;
+  --panel: #1d1828;
+  --panel-raised: #271f38;
+  --panel-border: #3a3050;
+
+  --ink: #f1eefa;
+  --ink-dim: #9c93b8;
+  --ink-faint: #6b6288;
+
+  --accent: #8b7fc9;
+  --accent-bright: #a99be8;
+
+  --stripe: linear-gradient(90deg, #4fae7c, #eac947, #dd5b49, #7a67c4);
+
+  --font-display: "Press Start 2P", "Courier New", monospace;
+  --font-body: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    Helvetica, Arial, sans-serif;
+
+  color-scheme: dark;
+}
+
+/* ---------------------------------------------------------------------- */
+/* 2. RESET BÁSICO                                                        */
+/* ---------------------------------------------------------------------- */
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  background: var(--void);
+  color: var(--ink);
+  font-family: var(--font-body);
+  -webkit-tap-highlight-color: transparent;
+}
+
+button,
+input {
+  font-family: inherit;
+  color: inherit;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent-bright);
+  outline-offset: 2px;
+}
+
+#app {
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
+/* ---------------------------------------------------------------------- */
+/* 3. TELA DA PRATELEIRA                                                  */
+/* ---------------------------------------------------------------------- */
+
+.screen-library {
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 30px 16px 10px;
+}
+
+.wordmark {
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  letter-spacing: 0.05em;
+  color: var(--ink);
+  position: relative;
+  padding-bottom: 16px;
+  text-align: center;
+}
+
+.wordmark::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  transform: translateX(-50%);
+  width: 72px;
+  height: 3px;
+  border-radius: 2px;
+  background: var(--stripe);
+}
+
+.shelf-wrap {
+  flex: 1 1 auto;
+  padding-bottom: 40px;
+}
+
+.shelf {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(128px, 1fr));
+  gap: 14px;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 8px 16px;
+}
+
+/* Quando só existe 1 jogo cadastrado, ele vira uma espécie de "tela de
+   título" (cartucho grande, centralizado), em vez de uma grade pequena. */
+.shelf.shelf--single {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 26px;
+  flex-wrap: wrap;
+  padding-top: 24px;
+}
+
+.shelf.shelf--single .cart-card {
+  width: 230px;
+}
+
+.shelf.shelf--single .cart-card--upload {
+  width: 140px;
+  opacity: 0.7;
+}
+
+.empty-state {
+  max-width: 460px;
+  margin: 30px auto 0;
+  padding: 22px 24px;
+  text-align: center;
+  color: var(--ink-dim);
+  border: 1px dashed var(--panel-border);
+  border-radius: 12px;
+  font-size: 0.92rem;
+  line-height: 1.6;
+}
+
+.empty-state code {
+  background: var(--panel);
+  padding: 0.1em 0.4em;
+  border-radius: 4px;
+  color: var(--accent-bright);
+  font-size: 0.9em;
+}
+
+@media (min-width: 700px) {
+  .shelf {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 18px;
+    padding: 8px 32px;
+  }
+}
+
+/* ---------------------------------------------------------------------- */
+/* 4. CARTUCHO (cartão de jogo)                                           */
+/* ---------------------------------------------------------------------- */
+/* A forma lembra, de propósito, um cartucho de SNES: uma "etiqueta" em
+   cima, um filete nas 4 cores do logo do console, e uma pequena aba
+   escura embaixo evocando o conector do cartucho. */
+
+.cart-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  background: var(--panel-raised);
+  border: 1px solid var(--panel-border);
+  border-radius: 10px;
+  overflow: hidden;
+  padding: 0;
+  text-align: left;
+  cursor: pointer;
+  transition: transform 0.18s ease, border-color 0.18s ease,
+    box-shadow 0.18s ease;
+}
+
+.cart-card:hover,
+.cart-card:focus-visible {
+  transform: translateY(-3px);
+  border-color: var(--accent);
+  box-shadow: 0 10px 24px -10px rgba(139, 127, 201, 0.55);
+}
+
+.cart-card::after {
+  /* a "aba" do conector */
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  transform: translateX(-50%);
+  width: 30%;
+  height: 6px;
+  background: var(--void);
+  border-radius: 3px 3px 0 0;
+}
+
+.cart-card__label {
+  flex: 1 1 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--panel-border);
+  background-image: linear-gradient(155deg, var(--panel-border), var(--panel));
+  background-size: cover;
+  background-position: center;
+}
+
+.cart-card__glyph {
+  font-family: var(--font-display);
+  font-size: 1.8rem;
+  color: var(--ink-dim);
+}
+
+.cart-card__stripe {
+  flex: none;
+  height: 5px;
+  background: var(--stripe);
+}
+
+.cart-card__body {
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  padding: 0.6rem 0.7rem 0.75rem;
+}
+
+.cart-card__title {
+  font-size: 0.85rem;
+  font-weight: 600;
+  line-height: 1.25;
+  color: var(--ink);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.cart-card__system {
+  font-family: var(--font-display);
+  font-size: 0.5rem;
+  letter-spacing: 0.04em;
+  color: var(--accent-bright);
+  text-transform: uppercase;
+}
+
+/* variante: cartucho de "carregar ROM do aparelho" */
+.cart-card--upload {
+  align-items: center;
+  justify-content: flex-end;
+  background: transparent;
+  border: 2px dashed var(--panel-border);
+}
+
+.cart-card--upload::after {
+  content: none;
+}
+
+.cart-card--upload:hover,
+.cart-card--upload:focus-within {
+  border-color: var(--accent);
+  transform: translateY(-3px);
+}
+
+.cart-card__upload-icon {
+  flex: 1 1 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.7rem;
+  color: var(--ink-faint);
+}
+
+.cart-card--upload .cart-card__body {
+  align-items: center;
+  text-align: center;
+}
+
+.cart-card__file-input {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+/* ---------------------------------------------------------------------- */
+/* 5. TELA DO JOGADOR                                                     */
+/* ---------------------------------------------------------------------- */
+
+.screen-player {
+  position: relative;
+  height: 100vh;
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--void);
+}
+
+.player-topbar {
+  position: relative;
+  z-index: 20;
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  background: rgba(18, 15, 25, 0.85);
+  backdrop-filter: blur(6px);
+}
+
+.back-button {
+  flex: none;
+  width: 34px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  border: 1px solid var(--panel-border);
+  background: var(--panel);
+  color: var(--ink);
+  font-size: 1.2rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.back-button:hover,
+.back-button:focus-visible {
+  border-color: var(--accent);
+  color: var(--accent-bright);
+}
+
+.player-title {
+  font-size: 0.85rem;
+  color: var(--ink-dim);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.game-mount {
+  flex: 1 1 auto;
+  min-height: 0;
+  width: 100%;
+}
+
+/* tela de carregamento — cobre a área do jogo até o EmulatorJS assumir */
+.loading-overlay,
+.player-error {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  background: var(--void);
+}
+
+.loading-overlay {
+  gap: 14px;
+}
+
+.loading-spinner {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 3px solid var(--panel-border);
+  border-top-color: var(--accent);
+  animation: spin 0.9s linear infinite;
+}
+
+.loading-title {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.loading-hint {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 0.6rem;
+  letter-spacing: 0.05em;
+  color: var(--ink-faint);
+}
+
+.player-error {
+  padding: 32px;
+  color: var(--ink-dim);
+  font-size: 0.95rem;
+  line-height: 1.6;
+  max-width: 460px;
+  margin: 0 auto;
+  white-space: pre-line; /* preserva as quebras de linha da mensagem de erro */
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ---------------------------------------------------------------------- */
+/* 6. AVISO "GIRE SEU APARELHO"                                           */
+/* ---------------------------------------------------------------------- */
+/* Só aparece quando a TELA DO JOGADOR está ativa e o aparelho está em pé
+   (retrato) — a prateleira/menu pode ser navegada em retrato sem problema,
+   já que o requisito de paisagem é sobre a experiência de jogo em si. */
+
+.orientation-notice {
+  display: none;
+}
+
+@media (orientation: portrait) and (max-width: 900px) {
+  .screen-player:not([hidden]) .orientation-notice {
+    position: fixed;
+    inset: 0;
+    z-index: 999;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    background: var(--void);
+    padding: 32px;
+    text-align: center;
+  }
+}
+
+.orientation-notice__icon {
+  font-size: 2.4rem;
+  color: var(--accent-bright);
+  animation: rotate-hint 1.6s ease-in-out infinite;
+}
+
+.orientation-notice p {
+  margin: 0;
+  color: var(--ink-dim);
+  font-size: 0.95rem;
+  max-width: 240px;
+}
+
+@keyframes rotate-hint {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(-90deg);
+  }
+}
+
+/* ---------------------------------------------------------------------- */
+/* 7. CONTROLE VIRTUAL x CONTROLE FÍSICO                                  */
+/* ---------------------------------------------------------------------- */
+/* Quando js/app.js detecta um controle físico conectado (Gamepad API),
+   ele adiciona a classe "physical-gamepad-connected" no <body>. Usamos
+   isso pra esconder o controle virtual que o EmulatorJS desenha na tela.
+   Essas classes (ejs_virtualGamepad_*) são internas do EmulatorJS — se
+   uma atualização futura da biblioteca mudar esses nomes, o pior que
+   acontece é o controle virtual continuar visível (nada quebra); o botão
+   de alternar controle virtual que já vem no próprio EmulatorJS continua
+   funcionando manualmente de qualquer forma. */
+
+body.physical-gamepad-connected .ejs_virtualGamepad_parent,
+body.physical-gamepad-connected .ejs_virtualGamepad_left,
+body.physical-gamepad-connected .ejs_virtualGamepad_right,
+body.physical-gamepad-connected .ejs_virtualGamepad_bottom {
+  display: none !important;
+}
+
+/* ---------------------------------------------------------------------- */
+/* 8. ANIMAÇÃO DE "LIGAR" E ACESSIBILIDADE                                */
+/* ---------------------------------------------------------------------- */
+
+@keyframes crt-flicker {
+  0% {
+    filter: brightness(2.4) saturate(0.3);
+    opacity: 0;
+  }
+  10% {
+    filter: brightness(0.3);
+    opacity: 1;
+  }
+  20% {
+    filter: brightness(1.7);
+  }
+  30% {
+    filter: brightness(0.7);
+  }
+  100% {
+    filter: brightness(1) saturate(1);
+    opacity: 1;
+  }
+}
+
+.crt-flicker {
+  animation: crt-flicker 0.5s steps(3, end);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .crt-flicker {
+    animation: none;
+  }
+  .cart-card,
+  .back-button {
+    transition: none;
+  }
+  .orientation-notice__icon {
+    animation: none;
+  }
+}
