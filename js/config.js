@@ -24,7 +24,7 @@ window.APP_CONFIG = {
     // (?jogo=id — veja o ícone 🔗 em cada cartucho quando isso estiver
     // como false, ou o README.md, seção 3). Útil pra usar com tags NFC
     // como "links secretos": quem não tem a tag/link não vê nada jogável.
-    hideLibraryByDefault: false,
+    hideLibraryByDefault: true,
 
     // --------------------------------------------------------------------
     // EMULATORJS — MOTOR DE EMULAÇÃO
